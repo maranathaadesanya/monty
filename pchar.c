@@ -1,30 +1,33 @@
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include "monty.h"
 
 /**
- * pchar - prints the int at the top of the stack as char
- * @stack: stack given by main
- * @line_cnt: amount of lines
+ * _pchar - prints the char at the top of the stack, followed by a new line.
+ * @stack: double pointer to header (top) of the stack.
+ * @line_number: counter for line number of the file.
  *
- * Return: void
+ * Return: void.
  */
-void pchar(stack_t **stack, unsigned int line_cnt)
+void _pchar(stack_t **stack, unsigned int line_number)
 {
-	if (!stack || !(*stack))
-	{
-		fprintf(stderr, "L%d: can't pchar, stack empty\n", line_cnt);
-		exit(EXIT_FAILURE);
-		return;
-	}
-	if (isascii((*stack)->n) == 0)
-	{
-		fprintf(stderr, "L%d: can't pchar, value out of range\n", line_cnt);
-		exit(EXIT_FAILURE);
-		return;
-	}
-	printf("%c\n", (*stack)->n);
-}
+	int n;
 
+	if (*stack == NULL)
+	{
+		fprintf(stderr, "L%d: can't pchar, stack empty\n", line_number);
+		free_stack_t(*stack);
+
+		exit(EXIT_FAILURE);
+	}
+
+	n = (*stack)->n;
+	if (n >= 32 && n <= 127)
+		printf("%c\n", n);
+	else
+	{
+		fprintf(stderr, "L%d: can't pchar, value out of range\n", line_number);
+		free_stack_t(*stack);
+
+		exit(EXIT_FAILURE);
+	}
+
+}

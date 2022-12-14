@@ -1,30 +1,45 @@
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include "monty.h"
 
 /**
- * _mul - divides the next top value by the top value
- * @stack: stack given by main
- * @line_cnt: line counter
- *
+ * _mul -  multiply top element of the stack with the second top element
+ * @head: top of the stack
+ * @line_number: line number where a wrong command was found
  * Return: void
  */
-void _mul(stack_t **stack, unsigned int line_cnt)
+void _mul(stack_t **head, unsigned int line_number)
 {
-	int result;
+	stack_t *current = *head;
+	int nnodes = 1; /*number of elements in stack*/
 
-	if (!stack || !*stack || !((*stack)->next))
+	if (*head == NULL)
 	{
-		fprintf(stderr, "L%d: can't mul, stack too short\n", line_cnt);
+		fprintf(stderr, "L%u: can't mul, stack too short\n", line_number);
+		free_stack_t(*head);
+
 		exit(EXIT_FAILURE);
-		return;
 	}
 
-	result = ((*stack)->next->n) * ((*stack)->n);
-	pop(stack, line_cnt);/*For top node*/
-	(*stack)->n = result;
+
+	while (current->next != NULL)
+	{
+		current = current->next;
+		nnodes++;
+	}
+
+	if (nnodes + 1 <= 2)
+	{
+		fprintf(stderr, "L%u: can't mul, stack too short\n", line_number);
+		free_stack_t(*head);
+
+		exit(EXIT_FAILURE);
+	}
+
+	current = *head; /*current equals to head to make mul*/
+
+	current->next->n = current->next->n * current->n; /*do the mul*/
+
+	*head = current->next;
+	free(current);
+	current->prev = NULL;
+
 }
-
-

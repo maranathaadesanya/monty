@@ -1,35 +1,50 @@
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include "monty.h"
 
 /**
- * mod - computes the remainder of the division
- * @stack: stack given by main
- * @line_cnt: line counter
+ * _mod - get the module of the second top element of the stack and top element
+ * @head: double pointer to header (top) of the stack.
+ * @line_number: counter for line number of the file.
  *
- * Return: void
+ * Return: void.
  */
-void mod(stack_t **stack, unsigned int line_cnt)
+void _mod(stack_t **head, unsigned int line_number)
 {
-	int result;
+	stack_t *current = *head;
+	int nnodes = 1; /*number of elements in stack*/
 
-	if (!stack || !*stack || !((*stack)->next))
+	if (*head == NULL)
 	{
-		fprintf(stderr, "L%d: can't mod, stack too short\n", line_cnt);
+		fprintf(stderr, "L%u: can't mod, stack too short\n", line_number);
+		free_stack_t(*head);
+
 		exit(EXIT_FAILURE);
-		return;
-	}
-	if (((*stack)->n) == 0)
-	{
-		fprintf(stderr, "L%d: division by zero\n", line_cnt);
-		exit(EXIT_FAILURE);
-		return;
 	}
 
-	result = ((*stack)->next->n) % ((*stack)->n);
-	pop(stack, line_cnt);/*For top node*/
-	(*stack)->n = result;
+	while (current->next != NULL)
+	{
+		current = current->next;
+		nnodes++;
+	}
+
+	if (nnodes + 1 <= 2)
+	{
+		fprintf(stderr, "L%d: can't mod, stack too short\n", line_number);
+		free_stack_t(*head);
+
+		exit(EXIT_FAILURE);
+	}
+
+	current = *head; /*current equals to head to make module*/
+
+	if (current->n == 0)
+	{
+		fprintf(stderr, "L%d: division by zero\n", line_number);
+		exit(EXIT_FAILURE);
+	}
+
+	current->next->n = current->next->n % current->n; /*do the mod*/
+
+	*head = current->next;
+	free(current);
+	current->prev = NULL;
 }
-
